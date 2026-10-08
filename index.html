@@ -1,122 +1,1085 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
-    <!-- ⚡ PERBAIKAN 1: Baris ini wajib ada agar teks dan emoji tidak rusak/menjadi simbol aneh -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENALL DESIGNER PRO</title>
+    <title>Enall DESIGNER PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        gray: {
+                            900: '#121212',
+                            800: '#1e1e1e',
+                            700: '#2d2d2d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Puter.js Library -->
+    <script src="https://js.puter.com/v2/"></script>
     <style>
-        body { background-color: #0b0f19; color: white; font-family: sans-serif; padding: 20px; }
-        .box { border: 1px dashed #3b82f6; padding: 20px; text-align: center; border-radius: 8px; margin-bottom: 15px; }
-        select, input { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border-radius: 6px; background: #1f2937; color: white; border: 1px solid #4b5563; }
-        button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6b21a8; /* Purple scrollbar */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9333ea;
+        }
+        
+        /* Cosmic Theme Background */
+        .cosmic-bg {
+            background-color: #050510; /* Deep bluish black */
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(139, 92, 246, 0.15) 0%, transparent 40%), /* Purple nebula top-left */
+                radial-gradient(circle at 90% 90%, rgba(34, 211, 238, 0.15) 0%, transparent 40%), /* Cyan nebula bottom-right */
+                radial-gradient(circle at 50% 50%, rgba(10, 10, 20, 1) 0%, transparent 100%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+        }
+
+        /* Glassmorphism - Cosmic Style */
+        .cosmic-glass {
+            background: rgba(10, 10, 25, 0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid #bf5af2; /* Neon purple border */
+            box-shadow: 0 0 15px rgba(191, 90, 242, 0.2), 0 8px 32px 0 rgba(0, 0, 0, 0.6); /* Soft glow + dark shadow */
+        }
+        
+        /* Snow/Star Canvas overlay */
+        #snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Let clicks pass through */
+            z-index: 0; /* Kept in background for stars */
+        }
+
+        .range-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: #4b5563;
+            outline: none;
+        }
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #22d3ee;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+        }
+        
+        .sci-fi-title-box {
+            background: linear-gradient(135deg, rgba(10, 15, 30, 0.95), rgba(0, 0, 0, 0.95));
+            border: 2px solid #bf5af2; /* Neon purple border */
+            box-shadow: 0 0 20px rgba(191, 90, 242, 0.6), inset 0 0 10px rgba(191, 90, 242, 0.4); /* Purple glow */
+            border-radius: 8px;
+            padding: 10px 20px;
+            position: relative;
+            overflow: visible; /* Ensure glow and border are not clipped */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Inner layer to contain the scanline so it doesn't break out of the rounded corners */
+        .sci-fi-title-box-inner {
+            position: absolute;
+            inset: 0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        /* Dynamic scanline animation across the box */
+        .sci-fi-title-box-inner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(34, 211, 238, 0.4), transparent); /* Cyan sweep */
+            animation: sciFiScan 3s infinite linear;
+        }
+        
+        .sci-fi-text {
+            background: linear-gradient(to right, #e879f9, #22d3ee); /* Brighter Purple to Cyan */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+            letter-spacing: 0.15em;
+        }
+
+        @keyframes sciFiScan {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+
+        /* Gradient Glass Card for AI Tools */
+        .ai-glass-card {
+            background: padding-box linear-gradient(rgba(10, 10, 25, 0.5), rgba(15, 15, 30, 0.6)),
+                        border-box linear-gradient(135deg, rgba(34, 211, 238, 0.8), rgba(139, 92, 246, 0.8));
+            border: 2px solid transparent;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ai-glass-card:hover {
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.3), 0 0 20px rgba(34, 211, 238, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Upload Area Cosmic Styling */
+        .upload-area-cosmic {
+            border: 2px dashed rgba(139, 92, 246, 0.5);
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.6), rgba(139, 92, 246, 0.05));
+            box-shadow: inset 0 0 15px rgba(139, 92, 246, 0.1);
+            transition: all 0.4s ease;
+        }
+        .upload-area-cosmic:hover {
+            border-color: rgba(34, 211, 238, 1);
+            background: rgba(34, 211, 238, 0.08);
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.3), inset 0 0 20px rgba(34, 211, 238, 0.2);
+        }
+
+        /* Neon Laser Loading Bar */
+        .neon-laser-container {
+            position: relative;
+            width: 250px;
+            height: 6px;
+            background: rgba(10, 10, 25, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.2), 0 0 15px rgba(139, 92, 246, 0.2);
+        }
+
+        .neon-laser-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(34, 211, 238, 0.8) 30%, 
+                rgba(139, 92, 246, 1) 50%, 
+                rgba(34, 211, 238, 0.8) 70%, 
+                transparent 100%);
+            background-size: 200% 100%;
+            animation: laserFlow 1.5s linear infinite;
+        }
+
+        .neon-laser-core {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 2px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px 3px #22d3ee, 0 0 30px 5px #8b5cf6;
+            animation: laserScan 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes laserFlow {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        @keyframes laserScan {
+            0% { left: 0%; width: 5%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { left: 95%; width: 5%; opacity: 0; }
+        }
     </style>
 </head>
-<body>
+<body class="cosmic-bg min-h-screen relative overflow-x-hidden text-gray-200">
+    
+    <!-- Snow Effect Layer (Acts as Stars in Cosmic Theme) -->
+    <canvas id="snow-canvas"></canvas>
 
-    <h2 style="color: #ec4899; text-align: center;">Enall DESIGNER PRO</h2>
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-40 transition-colors duration-300 cosmic-glass border-b border-[#bf5af2] overflow-visible">
+        <div class="max-w-7xl mx-auto px-4 pt-4 pb-3 min-h-[5rem] flex items-center justify-center overflow-visible">
+            <div class="sci-fi-title-box shadow-lg">
+                <div class="sci-fi-title-box-inner"></div>
+                <h1 class="text-sm font-bold uppercase sci-fi-text relative z-10">Enall DESIGNER PRO</h1>
+            </div>
+        </div>
+    </header>
 
-    <!-- GALERI REFERENSI -->
-    <div class="box">
-        <label>📸 GALERI REFERENSI (MAKS 4 FOTO)</label>
-        <input type="file" id="gambarRef" accept="image/*" multiple style="display:none;">
-        <div id="btnPilihGambar" style="margin-top: 10px; cursor: pointer;">📸 Klik untuk pilih gambar inspirasi</div>
-        <div id="previewGaleri" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; justify-content: center;"></div>
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 pt-28 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10">
+        
+        <!-- Left Panel: Controls -->
+        <div class="lg:col-span-5 space-y-6">
+            <!-- Glass container for controls -->
+            <div class="cosmic-glass rounded-2xl p-6 shadow-xl transition-all duration-300">
+                
+                <!-- 1. Gallery Reference -->
+                <div class="ai-glass-card p-5 mb-6">
+                    <label class="block text-sm font-semibold mb-2 flex items-center gap-2 text-white">
+                        <i class="fas fa-images text-cyan-400"></i> Galeri Referensi (Maks 4 Foto)
+                    </label>
+                    <p class="text-xs text-gray-300 mb-4">Unggah inspirasi hingga 4 foto untuk digabungkan atau dimodifikasi oleh AI.</p>
+                    
+                    <!-- Main Upload Area -->
+                    <label class="cursor-pointer flex flex-col items-center justify-center w-full h-32 upload-area-cosmic rounded-xl relative overflow-hidden group">
+                        <input type="file" id="upload-main" accept="image/*" multiple class="hidden">
+                        
+                        <!-- Glowing Upload Icon Container -->
+                        <div class="p-3 bg-gray-900/60 rounded-full mb-2 group-hover:bg-cyan-900/40 transition-all duration-300 shadow-[0_0_10px_rgba(139,92,246,0.3)] group-hover:shadow-[0_0_20px_rgba(34,211,238,0.6)] group-hover:scale-110">
+                            <i class="fas fa-cloud-upload-alt text-2xl text-purple-400 group-hover:text-cyan-300 transition-colors"></i>
+                        </div>
+                        
+                        <span class="text-sm font-medium text-purple-200/70 group-hover:text-cyan-100 transition-colors">Klik untuk pilih gambar</span>
+                    </label>
+
+                    <!-- Preview Grid -->
+                    <div id="preview-grid" class="grid grid-cols-4 gap-3 mt-4">
+                        <!-- Dynamic previews will be injected here via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- 2. Visual Description -->
+                <div class="mb-6 group">
+                    <label class="block text-sm font-semibold mb-2 flex items-center gap-2 text-white transition-colors group-focus-within:text-[#bf5af2]">
+                        <i class="fas fa-rocket text-[#bf5af2] group-focus-within:animate-pulse group-focus-within:text-[#d884ff] transition-colors"></i> Deskripsi Visual
+                    </label>
+                    <textarea id="prompt-input" rows="4" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-xl p-3 text-sm outline-none transition-all duration-300 resize-none placeholder-gray-500 hover:border-[#d884ff] hover:shadow-[0_0_15px_rgba(191,90,242,0.4)] focus:border-[#bf5af2] focus:bg-[#0a0a1a]/80 focus:shadow-[0_0_20px_rgba(191,90,242,0.6)]" placeholder="Masukkan detail karakter, wajah, rambut, background, dan pencahayaan... Jika mengunggah >1 gambar, berikan instruksi penggabungannya."></textarea>
+                </div>
+
+                <!-- 2.5 Clothing & Accessories (New Module) -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold mb-3 flex items-center gap-2 text-white">
+                        <i class="fas fa-tshirt text-[#bf5af2]"></i> Detail Pakaian & Aksesoris
+                    </label>
+                    <div class="grid grid-cols-1 gap-4">
+                        
+                        <!-- Atasan -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 text-gray-300">Atasan</label>
+                                <select id="top-type" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                                    <option value="">-- Pilih Atasan --</option>
+                                    <option value="Baju">Baju</option>
+                                    <option value="Jaket">Jaket</option>
+                                    <option value="Kemeja Denim">Kemeja Denim</option>
+                                    <option value="Sweater">Sweater</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 text-gray-300">Warna Atasan</label>
+                                <select id="top-color" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                                    <option value="">-- Pilih Warna --</option>
+                                    <option value="Hitam">Hitam</option>
+                                    <option value="Putih">Putih</option>
+                                    <option value="Biru Denim">Biru Denim</option>
+                                    <option value="Merah">Merah</option>
+                                    <option value="Hijau">Hijau</option>
+                                    <option value="Abu-abu">Abu-abu</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Bawahan -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 text-gray-300">Bawahan</label>
+                                <select id="bottom-type" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                                    <option value="">-- Pilih Bawahan --</option>
+                                    <option value="Celana Panjang">Celana Panjang</option>
+                                    <option value="Celana Pendek">Celana Pendek</option>
+                                    <option value="Rok">Rok</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 text-gray-300">Warna Bawahan</label>
+                                <select id="bottom-color" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                                    <option value="">-- Pilih Warna --</option>
+                                    <option value="Hitam">Hitam</option>
+                                    <option value="Putih">Putih</option>
+                                    <option value="Khaki">Khaki</option>
+                                    <option value="Biru">Biru</option>
+                                    <option value="Navy">Navy</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Alas Kaki -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 text-gray-300">Alas Kaki</label>
+                                <select id="shoes-type" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                                    <option value="">-- Pilih Alas Kaki --</option>
+                                    <option value="Sepatu">Sepatu</option>
+                                    <option value="Sandal">Sandal</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 text-gray-300">Warna Alas Kaki</label>
+                                <select id="shoes-color" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                                    <option value="">-- Pilih Warna --</option>
+                                    <option value="Hitam">Hitam</option>
+                                    <option value="Putih">Putih</option>
+                                    <option value="Cokelat">Cokelat</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Aksesoris -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 text-gray-300">Aksesoris</label>
+                                <select id="acc-type" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                                    <option value="">-- Pilih Aksesoris --</option>
+                                    <option value="Topi">Topi</option>
+                                    <option value="Kacamata">Kacamata</option>
+                                    <option value="Tas">Tas</option>
+                                    <option value="Jam Tangan">Jam Tangan</option>
+                                    <option value="Kalung">Kalung</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 text-gray-300">Bahan/Warna</label>
+                                <select id="acc-color" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                                    <option value="">-- Pilih Bahan/Warna --</option>
+                                    <option value="Emas">Emas</option>
+                                    <option value="Perak">Perak</option>
+                                    <option value="Hitam">Hitam</option>
+                                    <option value="Bahan Kulit">Bahan Kulit</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Divider Mewah -->
+                <div class="w-full h-[1px] bg-gradient-to-r from-transparent via-[#bf5af2] to-transparent my-8 shadow-[0_0_10px_rgba(191,90,242,0.6)] opacity-75"></div>
+
+                <!-- 3. Option Menus (Grid) -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <!-- Pose -->
+                    <div>
+                        <label class="block text-xs font-semibold mb-1 text-gray-300">Gaya Pose</label>
+                        <select id="pose-select" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                            <option value="">-- Pilih Pose --</option>
+                            <option value="pose berdiri">Berdiri</option>
+                            <option value="pose duduk">Duduk</option>
+                            <option value="pose berbaring">Berbaring</option>
+                            <option value="pose bersandar">Bersandar</option>
+                            <option value="pose bebas dinamis">Bebas</option>
+                        </select>
+                    </div>
+                    <!-- Camera Angle -->
+                    <div>
+                        <label class="block text-xs font-semibold mb-1 text-gray-300">Sudut Kamera</label>
+                        <select id="angle-select" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                            <option value="">-- Pilih Sudut --</option>
+                            <option value="Close-up shot">Close-up</option>
+                            <option value="Medium shot">Medium</option>
+                            <option value="Full body shot">Full body</option>
+                            <option value="Bird's-Eye view">Bird's-Eye</option>
+                            <option value="Low Angle shot">Low Angle</option>
+                        </select>
+                    </div>
+                    <!-- Aspect Ratio -->
+                    <div>
+                        <label class="block text-xs font-semibold mb-1 text-gray-300">Rasio Gambar</label>
+                        <select id="ratio-select" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                            <option value="1:1">1:1 (Square)</option>
+                            <option value="9:16">9:16 (Story)</option>
+                            <option value="3:4">3:4 (Portrait)</option>
+                            <option value="4:3">4:3 (Landscape)</option>
+                            <option value="16:9">16:9 (Widescreen)</option>
+                        </select>
+                    </div>
+                    <!-- Photography Style -->
+                    <div>
+                        <label class="block text-xs font-semibold mb-1 text-gray-300">Gaya Fotografi</label>
+                        <select id="style-select" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                            <option value="">-- Pilih Gaya --</option>
+                            <option value="fotografi realistis berkualitas tinggi, tajam">Realistis</option>
+                            <option value="gaya cinematic, pencahayaan dramatis, kualitas film">Cinematic</option>
+                            <option value="street photography, suasana perkotaan alami">Street Foto</option>
+                            <option value="portrait photography profesional, bokeh halus di latar belakang">Portrait Foto</option>
+                        </select>
+                    </div>
+                    <!-- Visual Style -->
+                    <div>
+                        <label class="block text-xs font-semibold mb-1 text-gray-300">Gaya Visual</label>
+                        <select id="visual-select" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                            <option value="">-- Pilih Visual --</option>
+                            <option value="gaya art 3D render, octane render, unreal engine 5, sangat detail">Gaya Art 3D</option>
+                            <option value="gaya anime jepang, ilustrasi digital 2D">Anime / Ilustrasi 2D</option>
+                            <option value="gaya lukisan cat minyak, tekstur kanvas">Lukisan Klasik</option>
+                            <option value="gaya cyberpunk, neon glow, futuristik, sci-fi">Cyberpunk / Sci-fi</option>
+                            <option value="gaya vektor digital, desain flat minimalis">Vektor / Kartun</option>
+                        </select>
+                    </div>
+                    <!-- Anatomy -->
+                    <div>
+                        <label class="block text-xs font-semibold mb-1 text-gray-300">Anatomi</label>
+                        <select id="anatomy-select" class="w-full bg-gray-900/60 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] outline-none appearance-none cursor-pointer transition-all">
+                            <option value="">-- Pilih Anatomi --</option>
+                            <option value="proporsional, anatomi tubuh sempurna, simetris">Proporsional</option>
+                            <option value="atletis, berotot, bugar, kekar">Atletis / Berotot</option>
+                            <option value="kurus, ramping, langsing, slim">Ramping / Slim</option>
+                            <option value="berisi, curvy, plus size">Berisi / Curvy</option>
+                            <option value="tinggi semampai, model proportion">Tinggi Semampai</option>
+                            <option value="mungil, petite">Mungil / Petite</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 4. Quantity Selection -->
+                <div class="mb-6">
+                    <label class="block text-xs font-semibold mb-2 text-gray-300">Jumlah Gambar</label>
+                    <div class="grid grid-cols-4 gap-3">
+                        <button class="qty-btn border-cyan-500 bg-cyan-900/40 text-cyan-100 border shadow-[0_0_15px_rgba(34,211,238,0.5)] text-sm font-bold py-2 rounded-xl transition-all" data-qty="1">1</button>
+                        <button class="qty-btn border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] bg-gray-900/60 text-gray-400 border hover:bg-[#bf5af2]/20 hover:text-white hover:shadow-[0_0_15px_rgba(191,90,242,0.5)] text-sm font-bold py-2 rounded-xl transition-all" data-qty="2">2</button>
+                        <button class="qty-btn border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] bg-gray-900/60 text-gray-400 border hover:bg-[#bf5af2]/20 hover:text-white hover:shadow-[0_0_15px_rgba(191,90,242,0.5)] text-sm font-bold py-2 rounded-xl transition-all" data-qty="3">3</button>
+                        <button class="qty-btn border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] bg-gray-900/60 text-gray-400 border hover:bg-[#bf5af2]/20 hover:text-white hover:shadow-[0_0_15px_rgba(191,90,242,0.5)] text-sm font-bold py-2 rounded-xl transition-all" data-qty="4">4</button>
+                    </div>
+                </div>
+
+                <!-- Generate Button -->
+                <button id="generate-btn" class="w-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-bold py-3 px-4 rounded-xl shadow-[0_0_15px_rgba(34,211,238,0.4)] transform transition hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2">
+                    <i class="fas fa-wand-magic-sparkles"></i> GENERATE GAMBAR
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Panel: Preview & Filters -->
+        <div class="lg:col-span-7 flex flex-col gap-6">
+            <!-- Canvas / Result Area -->
+            <div class="cosmic-glass rounded-2xl p-4 shadow-xl flex-1 flex flex-col items-center justify-center relative min-h-[400px] overflow-hidden">
+                
+                <!-- Loading State with Neon Laser -->
+                <div id="loading-state" class="hidden absolute inset-0 bg-[#050510]/80 z-20 flex flex-col items-center justify-center backdrop-blur-md">
+                    <!-- Laser Scanner -->
+                    <div class="neon-laser-container mb-6">
+                        <div class="neon-laser-bar"></div>
+                        <div class="neon-laser-core"></div>
+                    </div>
+                    <!-- Pulsing text -->
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] sci-fi-text animate-pulse">Memproses Data Kosmik...</p>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="empty-state" class="text-center p-8 opacity-50 flex flex-col items-center text-white">
+                    <i class="fas fa-image text-6xl mb-4 text-gray-400"></i>
+                    <p>Hasil gambar akan muncul di sini</p>
+                </div>
+
+                <!-- Result Canvas Wrapper (Dynamic Grid) -->
+                <div id="canvas-container" class="w-full h-full max-h-[70vh] overflow-y-auto grid gap-4 hidden p-2 scrollbar-thin scrollbar-thumb-purple-600 scrollbar-track-transparent">
+                    <!-- Canvases will be generated dynamically here -->
+                </div>
+            </div>
+
+            <!-- Filter Controls & Save Button -->
+            <div class="cosmic-glass rounded-2xl p-6 shadow-xl transition-all duration-300">
+                <div class="flex flex-col gap-4">
+                    <!-- Dropdown Filter -->
+                    <div class="w-full relative group">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                            <i class="fas fa-sliders-h text-cyan-400"></i>
+                        </div>
+                        <select id="filter-select" class="w-full bg-gray-900/60 hover:bg-gray-800/80 border border-[#bf5af2] shadow-[0_0_10px_rgba(191,90,242,0.3)] text-white text-sm font-semibold py-2.5 pl-10 pr-10 rounded-xl transition-all focus:ring-2 focus:ring-[#bf5af2] focus:shadow-[0_0_15px_rgba(191,90,242,0.5)] appearance-none cursor-pointer">
+                            <option value="none">Filter: Normal</option>
+                            <option value="sepia(0.3) saturate(1.2) hue-rotate(180deg) brightness(1.05) contrast(1.05)">Filter: Cool</option>
+                            <option value="sepia(0.4) saturate(1.3) hue-rotate(-10deg) brightness(1.1) contrast(1.1)">Filter: Golden Hour</option>
+                            <option value="grayscale(100%)">Filter: B&W</option>
+                            <option value="sepia(100%)">Filter: Sepia</option>
+                            <option value="sepia(0.6) saturate(0.8) contrast(1.1) brightness(0.9)">Filter: Vintage</option>
+                            <option value="sepia(0.3) saturate(1.4) contrast(1.2) hue-rotate(-20deg)">Filter: Retro</option>
+                            <option value="grayscale(100%) contrast(1.5) brightness(1.1)">Filter: Black & White</option>
+                            <option value="saturate(1.2) contrast(1.1) brightness(1.1)">Filter: Natural Glow</option>
+                            <option value="contrast(1.2) saturate(1.3) brightness(1.05)">Filter: Clarendon</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none">
+                            <i class="fas fa-chevron-down text-purple-400 group-hover:text-cyan-300 transition-colors"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Save Button -->
+                    <button id="save-btn" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-sm font-semibold py-2.5 px-6 rounded-xl shadow-[0_0_10px_rgba(34,211,238,0.3)] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2" disabled>
+                        <i class="fas fa-download"></i> Simpan Gambar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- UI Message Box -->
+    <div id="message-box" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-2xl transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center gap-3">
+        <i class="fas fa-info-circle text-blue-400" id="msg-icon"></i>
+        <span id="msg-text" class="text-sm font-medium">Message</span>
     </div>
 
-    <label>Deskripsi Visual</label>
-    <input type="text" placeholder="Contoh: di dalam studio foto pencahayaan neon">
-
-    <!-- ⚡ PERBAIKAN 2: Pastikan deretan tag <select> menu drop-down Anda terpasang kembali utuh di sini -->
-    <h3 style="color: #3b82f6;">| DETAIL PAKAIAN & AKSESORIS</h3>
-    
-    <label>Atasan</label>
-    <select name="atasan">
-        <option>-- Pilih Atasan --</option>
-        <option>Kemeja</option>
-        <option>Kaos</option>
-        <option>Jaket</option>
-    </select>
-
-    <label>Warna Atasan</label>
-    <select name="warna_atasan">
-        <option>-- Pilih Warna --</option>
-        <option>Hitam</option>
-        <option>Putih</option>
-        <option>Merah</option>
-    </select>
-
-    <label>Bawahan</label>
-    <select name="bawahan">
-        <option>-- Pilih Bawahan --</option>
-        <option>Celana Panjang</option>
-        <option>Celana Pendek</option>
-        <option>Rok</option>
-    </select>
-
-    <!-- AREA CANVAS UNTUK MENAMPILKAN HASIL GEMINI -->
-    <canvas id="canvasGemini" width="800" height="800" style="max-width: 100%; height: auto; border: 1px solid #333; background: #111; display: none; margin-bottom: 15px; border-radius: 8px;"></canvas>
-
-    <button id="btnGenerate" type="button">GENERATE GAMBAR</button>
-    <button id="btnSimpan" type="button" style="background: #16a34a; margin-top: 10px; display: none;">SIMPAN GAMBAR (DOWNLOAD)</button>
-
-    <!-- Hubungkan dengan Script Pengaktif Fungsi Klik yang sudah kita bahas sebelumnya -->
     <script>
-      const btnPilihGambar = document.getElementById('btnPilihGambar');
-      const inputGambar = document.getElementById('gambarRef');
-      const previewGaleri = document.getElementById('previewGaleri');
-      const btnGenerate = document.getElementById('btnGenerate');
-      const btnSimpan = document.getElementById('btnSimpan');
-      const canvas = document.getElementById('canvasGemini');
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      let listGambarBase64 = [];
+        // State variables
+        let uploadedFilesData = []; // Array of { base64, mimeType, dataUrl }
+        let originalGeneratedImages = []; // Array of HTMLImageElements for batch generation
+        let currentCanvases = []; // Array of Canvas elements
+        let imageQuantity = 1; // Default to 1 image
+        let currentFilter = 'none'; // Track active filter string
+        
+        // DOM Elements
+        const generateBtn = document.getElementById('generate-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const loadingState = document.getElementById('loading-state');
+        const emptyState = document.getElementById('empty-state');
+        const canvasContainer = document.getElementById('canvas-container');
+        
+        // Filter Elements
+        const filterSelect = document.getElementById('filter-select');
+        const qtyBtns = document.querySelectorAll('.qty-btn');
+        
+        // --- Quantity Selection Logic ---
+        qtyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active state styling to cosmic theme
+                qtyBtns.forEach(b => {
+                    b.classList.remove('border-cyan-500', 'bg-cyan-900/40', 'text-cyan-100', 'shadow-[0_0_15px_rgba(34,211,238,0.5)]');
+                    b.classList.add('border-[#bf5af2]', 'shadow-[0_0_10px_rgba(191,90,242,0.3)]', 'bg-gray-900/60', 'text-gray-400');
+                });
+                btn.classList.remove('border-[#bf5af2]', 'shadow-[0_0_10px_rgba(191,90,242,0.3)]', 'bg-gray-900/60', 'text-gray-400');
+                btn.classList.add('border-cyan-500', 'bg-cyan-900/40', 'text-cyan-100', 'shadow-[0_0_15px_rgba(34,211,238,0.5)]');
+                
+                imageQuantity = parseInt(btn.getAttribute('data-qty'));
+                
+                // Update main button text dynamically
+                if (imageQuantity > 1) {
+                    generateBtn.innerHTML = `<i class="fas fa-wand-magic-sparkles"></i> GENERATE GAMBAR MENJADI ${imageQuantity}`;
+                } else {
+                    generateBtn.innerHTML = `<i class="fas fa-wand-magic-sparkles"></i> GENERATE GAMBAR`;
+                }
+            });
+        });
 
-      btnPilihGambar.addEventListener('click', () => inputGambar.click());
-      inputGambar.addEventListener('change', function(e) {
-          const files = Array.from(e.target.files).slice(0, 4);
-          previewGaleri.innerHTML = '';
-          listGambarBase64 = [];
-          files.forEach(file => {
-              const reader = new FileReader();
-              reader.onload = function(event) {
-                  listGambarBase64.push(event.target.result);
-                  const img = document.createElement('img');
-                  img.src = event.target.result;
-                  img.style.width = '70px'; img.style.height = '70px'; img.style.objectFit = 'cover'; img.style.borderRadius = '6px';
-                  previewGaleri.appendChild(img);
-              };
-              reader.readAsDataURL(file);
-          });
-      });
+        // --- Custom Message Box ---
+        function showMessage(msg, type = 'info') {
+            const box = document.getElementById('message-box');
+            const icon = document.getElementById('msg-icon');
+            const text = document.getElementById('msg-text');
+            
+            text.textContent = msg;
+            icon.className = type === 'error' ? 'fas fa-exclamation-circle text-red-400' : 
+                             type === 'success' ? 'fas fa-check-circle text-green-400' : 
+                             'fas fa-info-circle text-blue-400';
+            
+            box.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                box.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
 
-      btnGenerate.addEventListener('click', async () => {
-          btnGenerate.disabled = true;
-          btnGenerate.innerText = "SEDANG MENGGENERATE...";
-          // Simulasi Fetch API ke backend
-          setTimeout(() => {
-              const imgHasil = new Image();
-              imgHasil.crossOrigin = "anonymous";
-              imgHasil.onload = function() {
-                  canvas.style.display = "block";
-                  ctx.clearRect(0, 0, canvas.width, canvas.height);
-                  ctx.drawImage(imgHasil, 0, 0, canvas.width, canvas.height);
-                  btnGenerate.innerText = "GENERATE BERHASIL";
-                  btnGenerate.disabled = false;
-                  btnSimpan.style.display = "block";
-              };
-              imgHasil.src = "https://unsplash.com";
-          }, 2000);
-      });
+        // --- Premium Realistic Snow/Stars Effect ---
+        const snowCanvas = document.getElementById('snow-canvas');
+        const snowCtx = snowCanvas.getContext('2d');
+        let particles = [];
+        
+        function resizeSnowCanvas() {
+            snowCanvas.width = window.innerWidth;
+            snowCanvas.height = window.innerHeight;
+        }
+        
+        window.addEventListener('resize', resizeSnowCanvas);
+        resizeSnowCanvas();
 
-      btnSimpan.addEventListener('click', function() {
-          const dataUrl = canvas.toDataURL("image/png");
-          const downloadAnchor = document.createElement('a');
-          downloadAnchor.href = dataUrl;
-          downloadAnchor.download = "enall-designer-pro-output.png";
-          document.body.appendChild(downloadAnchor);
-          downloadAnchor.click();
-          document.body.removeChild(downloadAnchor);
-      });
+        function createParticles() {
+            particles = [];
+            const particleCount = Math.floor(window.innerWidth / 10);
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * snowCanvas.width,
+                    y: Math.random() * snowCanvas.height,
+                    opacity: Math.random() * 0.5 + 0.1,
+                    speedX: Math.random() * 1 - 0.5,
+                    speedY: Math.random() * 1.5 + 0.5,
+                    radius: Math.random() * 2 + 1
+                });
+            }
+        }
+
+        function drawSnow() {
+            snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+            // In Cosmic Theme, particles act as distant glowing stars/snow
+            snowCtx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            
+            snowCtx.beginPath();
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                snowCtx.moveTo(p.x, p.y);
+                snowCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2, true);
+            }
+            snowCtx.fill();
+            updateSnow();
+            requestAnimationFrame(drawSnow);
+        }
+
+        function updateSnow() {
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.y += p.speedY;
+                p.x += p.speedX;
+                
+                if (p.y > snowCanvas.height) {
+                    particles[i] = {
+                        x: Math.random() * snowCanvas.width,
+                        y: 0,
+                        opacity: p.opacity,
+                        speedX: p.speedX,
+                        speedY: p.speedY,
+                        radius: p.radius
+                    };
+                }
+                if (p.x > snowCanvas.width) p.x = 0;
+                if (p.x < 0) p.x = snowCanvas.width;
+            }
+        }
+        
+        createParticles();
+        drawSnow();
+
+        // --- Image Upload Logic ---
+        const uploadMain = document.getElementById('upload-main');
+        const previewGrid = document.getElementById('preview-grid');
+
+        function renderPreviews() {
+            previewGrid.innerHTML = '';
+            uploadedFilesData.forEach((file, index) => {
+                const col = document.createElement('div');
+                col.className = 'relative w-full aspect-square rounded-xl overflow-hidden border border-purple-500/50 shadow-[0_0_8px_rgba(139,92,246,0.3)] bg-gray-900';
+                
+                const img = document.createElement('img');
+                img.src = file.dataUrl;
+                img.className = 'w-full h-full object-cover';
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow z-10 transition-colors';
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                
+                // Remove specific image
+                removeBtn.onclick = (e) => {
+                    e.preventDefault();
+                    uploadedFilesData.splice(index, 1);
+                    renderPreviews();
+                };
+                
+                col.appendChild(img);
+                col.appendChild(removeBtn);
+                previewGrid.appendChild(col);
+            });
+        }
+
+        uploadMain.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            
+            if (uploadedFilesData.length + files.length > 4) {
+                showMessage('Maksimal hanya dapat mengunggah 4 foto sekaligus.', 'error');
+            }
+            
+            const allowedSpace = 4 - uploadedFilesData.length;
+            const filesToProcess = files.slice(0, allowedSpace);
+
+            filesToProcess.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const dataUrl = event.target.result;
+                    const base64Data = dataUrl.split(',')[1];
+                    
+                    uploadedFilesData.push({
+                        base64: base64Data,
+                        mimeType: file.type,
+                        dataUrl: dataUrl
+                    });
+                    
+                    renderPreviews();
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            // Reset input value to allow uploading the same file again if it was removed
+            uploadMain.value = '';
+        });
+
+        // --- Canvas Rendering & Filtering ---
+        function applyFiltersAndDraw() {
+            if (originalGeneratedImages.length === 0) return;
+
+            currentCanvases.forEach((canvas, index) => {
+                const img = originalGeneratedImages[index];
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas size to match original image
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                // Clear and apply selected filter
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.filter = currentFilter;
+                
+                // Draw original image
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                // Reset filter for watermark so it isn't affected by user adjustments
+                ctx.filter = 'none';
+
+                drawWatermark(canvas, ctx);
+            });
+        }
+
+        function drawWatermark(canvas, ctx) {
+            // Watermark settings
+            const text = "ENALL DESIGNER PRO";
+            const margin = Math.max(20, canvas.width * 0.02); // Margin dari tepi gambar
+            
+            // Dynamic font size based on image width
+            const fontSize = Math.max(14, canvas.width * 0.022);
+            ctx.font = `bold ${fontSize}px Inter, sans-serif`;
+            
+            // Calculate dimensions
+            const textWidth = ctx.measureText(text).width;
+            const iconSize = fontSize * 0.85;
+            const gap = fontSize * 0.4; // Jarak antara teks dan ikon
+            
+            // Box dimensions (padding around text and icon)
+            const padX = fontSize * 0.8;
+            const padY = fontSize * 0.5;
+            const contentWidth = textWidth + gap + iconSize;
+            const boxWidth = contentWidth + (padX * 2);
+            const boxHeight = fontSize + (padY * 2);
+            const radius = boxHeight / 2; // Membuat sudut melengkung sempurna (pill shape)
+            
+            // Box position: bottom left
+            const boxX = margin;
+            const boxY = canvas.height - margin - boxHeight;
+
+            ctx.save();
+            
+            // 1. Draw Premium Glass/Translucent Box
+            ctx.beginPath();
+            ctx.moveTo(boxX + radius, boxY);
+            ctx.lineTo(boxX + boxWidth - radius, boxY);
+            ctx.quadraticCurveTo(boxX + boxWidth, boxY, boxX + boxWidth, boxY + radius);
+            ctx.lineTo(boxX + boxWidth, boxY + boxHeight - radius);
+            ctx.quadraticCurveTo(boxX + boxWidth, boxY + boxHeight, boxX + boxWidth - radius, boxY + boxHeight);
+            ctx.lineTo(boxX + radius, boxY + boxHeight);
+            ctx.quadraticCurveTo(boxX, boxY + boxHeight, boxX, boxY + boxHeight - radius);
+            ctx.lineTo(boxX, boxY + radius);
+            ctx.quadraticCurveTo(boxX, boxY, boxX + radius, boxY);
+            ctx.closePath();
+
+            // Background gelap transparan agar teks selalu jelas di foto terang
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)'; 
+            ctx.fill();
+
+            // Border tipis putih transparan
+            ctx.lineWidth = Math.max(1.2, canvas.width * 0.0015);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.stroke();
+
+            // 2. Draw Text (White)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.textBaseline = 'middle';
+            const textX = boxX + padX;
+            const textY = boxY + (boxHeight / 2);
+            ctx.fillText(text, textX, textY);
+
+            // 3. Draw Blue Checkmark Icon
+            const iconX = textX + textWidth + gap;
+            const iconY = textY - (iconSize / 2);
+            
+            // Lingkaran biru
+            ctx.beginPath();
+            ctx.arc(iconX + iconSize/2, iconY + iconSize/2, iconSize/2, 0, 2 * Math.PI);
+            ctx.fillStyle = '#3b82f6'; // Blue-500
+            ctx.fill();
+
+            // Centang putih
+            ctx.beginPath();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = Math.max(1.5, iconSize * 0.15);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            const checkX = iconX + iconSize * 0.25;
+            const checkY = iconY + iconSize * 0.5;
+            ctx.moveTo(checkX, checkY);
+            ctx.lineTo(checkX + iconSize * 0.2, checkY + iconSize * 0.25);
+            ctx.lineTo(checkX + iconSize * 0.55, checkY - iconSize * 0.15);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        // Attach event listener to filter dropdown
+        if (filterSelect) {
+            filterSelect.addEventListener('change', (e) => {
+                currentFilter = e.target.value;
+                applyFiltersAndDraw();
+            });
+        }
+
+        // --- AI Generation Logic (Gemini API) ---
+        generateBtn.addEventListener('click', async () => {
+            const promptText = document.getElementById('prompt-input').value.trim();
+            const pose = document.getElementById('pose-select').value;
+            const angle = document.getElementById('angle-select').value;
+            const style = document.getElementById('style-select').value;
+            const ratio = document.getElementById('ratio-select').value;
+            const visual = document.getElementById('visual-select').value;
+            const anatomy = document.getElementById('anatomy-select').value;
+
+            // Gather Clothing & Accessories Logic
+            const topType = document.getElementById('top-type').value;
+            const topColor = document.getElementById('top-color').value;
+            const bottomType = document.getElementById('bottom-type').value;
+            const bottomColor = document.getElementById('bottom-color').value;
+            const shoesType = document.getElementById('shoes-type').value;
+            const shoesColor = document.getElementById('shoes-color').value;
+            const accType = document.getElementById('acc-type').value;
+            const accColor = document.getElementById('acc-color').value;
+
+            let clothingDesc = "";
+            const clothingParts = [];
+
+            if (topType) {
+                clothingParts.push(`${topType}${topColor ? ' berwarna ' + topColor : ''}`);
+            }
+            if (bottomType) {
+                clothingParts.push(`${bottomType}${bottomColor ? ' berwarna ' + bottomColor : ''}`);
+            }
+            if (shoesType) {
+                clothingParts.push(`${shoesType}${shoesColor ? ' berwarna ' + shoesColor : ''}`);
+            }
+            if (accType) {
+                clothingParts.push(`${accType}${accColor ? ' (' + accColor + ')' : ''}`);
+            }
+
+            if (clothingParts.length > 0) {
+                clothingDesc = "Karakter mengenakan " + clothingParts.join(', ') + ".";
+            }
+
+            if (!promptText && uploadedFilesData.length === 0 && !clothingDesc) {
+                showMessage('Harap masukkan Deskripsi Visual, Pakaian, atau unggah gambar referensi.', 'error');
+                return;
+            }
+
+            // Construct final prompt
+            let finalPrompt = "Buatkan gambar profesional dengan kriteria berikut.\n";
+            if (promptText) finalPrompt += `Deskripsi: ${promptText}\n`;
+            if (clothingDesc) finalPrompt += `Pakaian & Aksesoris: ${clothingDesc}\n`;
+            if (pose) finalPrompt += `Pose: ${pose}\n`;
+            if (angle) finalPrompt += `Sudut Kamera: ${angle}\n`;
+            if (style) finalPrompt += `Gaya Fotografi: ${style}\n`;
+            if (visual) finalPrompt += `Gaya Visual: ${visual}\n`;
+            if (anatomy) finalPrompt += `Anatomi: ${anatomy}\n`;
+
+            if (uploadedFilesData.length > 1) {
+                finalPrompt = `Gabungkan ${uploadedFilesData.length} gambar referensi yang disertakan menjadi satu karya baru yang unik dan profesional secara visual. Ikuti instruksi ini: ${finalPrompt}`;
+            } else if (uploadedFilesData.length === 1) {
+                finalPrompt = `Modifikasi atau gunakan gambar referensi yang disertakan sebagai dasar untuk menghasilkan karya profesional. Ikuti instruksi ini: ${finalPrompt}`;
+            }
+
+            // Set UI to loading state
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+            emptyState.classList.add('hidden');
+            canvasContainer.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+            saveBtn.disabled = true;
+
+            try {
+                // Implementasi integrasi Puter.js AI Image Generation
+                const fetchPromises = Array.from({ length: imageQuantity }).map(async (_, index) => {
+                    // Modifikasi prompt untuk variasi batch
+                    const variedPrompt = finalPrompt + ` [Variasi Render ${index + 1}]`;
+                    
+                    // Opsi untuk puter.js
+                    const puterOptions = {
+                        aspect_ratio: ratio // Mengatur rasio gambar
+                    };
+
+                    // Jika ada gambar referensi yang diunggah, tambahkan ke opsi
+                    if (uploadedFilesData.length > 0) {
+                        puterOptions.input_image = uploadedFilesData[0].dataUrl;
+                    }
+
+                    // Panggil fungsi core AI dari Puter.js
+                    // puter.ai.txt2img mengembalikan elemen HTMLImageElement (<img>)
+                    const imgElement = await puter.ai.txt2img(variedPrompt, puterOptions);
+                    
+                    // Kita ambil atribut sumber URL datanya untuk dimasukkan ke Canvas kita
+                    return imgElement.src; 
+                });
+
+                // Tunggu semua proses paralel (batch) dari Puter selesai
+                const imageUrls = await Promise.all(fetchPromises);
+
+                if (imageUrls.length === 0) {
+                    throw new Error('Tidak ada data gambar dalam respons AI.');
+                }
+
+                // Prepare canvas container grid based on count
+                canvasContainer.innerHTML = ''; // Clear previous canvases
+                originalGeneratedImages = [];
+                currentCanvases = [];
+                
+                canvasContainer.className = 'w-full h-full max-h-[70vh] overflow-y-auto grid gap-4 hidden p-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent';
+                if (imageUrls.length === 1) {
+                    canvasContainer.classList.add('grid-cols-1', 'place-items-center');
+                } else if (imageUrls.length === 2) {
+                    canvasContainer.classList.add('grid-cols-1', 'sm:grid-cols-2');
+                } else {
+                    canvasContainer.classList.add('grid-cols-2');
+                }
+
+                let loadedCount = 0;
+                imageUrls.forEach((url, index) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.className = 'max-w-full rounded-lg shadow-lg object-contain w-full h-auto border border-gray-700/50';
+                        canvasContainer.appendChild(canvas);
+                        
+                        originalGeneratedImages.push(img);
+                        currentCanvases.push(canvas);
+
+                        loadedCount++;
+                        // When all images are loaded, apply filters and show
+                        if (loadedCount === imageUrls.length) {
+                            loadingState.classList.add('hidden');
+                            canvasContainer.classList.remove('hidden');
+                            
+                            // Reset filter to Normal on new generation
+                            if (filterSelect) {
+                                filterSelect.value = 'none';
+                                currentFilter = 'none';
+                            }
+                            applyFiltersAndDraw();
+                            
+                            saveBtn.disabled = false;
+                            showMessage(`${loadedCount} Gambar berhasil di-generate!`, 'success');
+                        }
+                    };
+                    img.onerror = () => {
+                        console.error(`Gagal memuat gambar ke-${index + 1}`);
+                    };
+                    img.src = url;
+                });
+
+            } catch (error) {
+                console.error("Generation Error:", error);
+                // Pesan penanganan error khusus Puter.js
+                showMessage('Proses gagal. Jika ini pertama kali, pastikan Anda mengklik "Izinkan/Allow" pada pop-up akun Puter.com yang muncul.', 'error');
+                loadingState.classList.add('hidden');
+                
+                // Revert to empty state if no previous image exists
+                if (originalGeneratedImages.length === 0) {
+                    emptyState.classList.remove('hidden');
+                } else {
+                    canvasContainer.classList.remove('hidden');
+                    saveBtn.disabled = false;
+                }
+            } finally {
+                generateBtn.disabled = false;
+                if (imageQuantity > 1) {
+                    generateBtn.innerHTML = `<i class="fas fa-wand-magic-sparkles"></i> GENERATE GAMBAR MENJADI ${imageQuantity}`;
+                } else {
+                    generateBtn.innerHTML = `<i class="fas fa-wand-magic-sparkles"></i> GENERATE GAMBAR`;
+                }
+            }
+        });
+
+        // --- Save / Download Logic ---
+        saveBtn.addEventListener('click', async () => {
+            if (currentCanvases.length === 0) return;
+            
+            try {
+                // Nonaktifkan tombol sementara saat proses unduh berlangsung
+                saveBtn.disabled = true;
+                const originalText = saveBtn.innerHTML;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+                // Looping unduhan massal dengan delay
+                for (let i = 0; i < currentCanvases.length; i++) {
+                    const canvas = currentCanvases[i];
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+                    
+                    const a = document.createElement('a');
+                    a.href = dataUrl;
+                    const suffix = currentCanvases.length > 1 ? `_Batch${i+1}` : '';
+                    a.download = `Enall_Designer_Pro_${Date.now()}${suffix}.jpg`;
+                    
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    
+                    // Jeda 300ms antar unduhan agar tidak diblokir browser sebagai spam
+                    if (i < currentCanvases.length - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 300));
+                    }
+                }
+                
+                const msg = currentCanvases.length > 1 ? `${currentCanvases.length} gambar berhasil disimpan!` : 'Gambar berhasil disimpan ke galeri!';
+                showMessage(msg, 'success');
+                
+                // Kembalikan teks tombol
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+
+            } catch (err) {
+                console.error("Download Error", err);
+                showMessage('Gagal menyimpan gambar.', 'error');
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-download"></i> Simpan Gambar';
+            }
+        });
+
     </script>
 </body>
-</html>
+    </html>
