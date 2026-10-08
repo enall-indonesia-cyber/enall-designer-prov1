@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- ⚡ PERBAIKAN 1: Baris ini wajib ada agar teks dan emoji tidak rusak/menjadi simbol aneh -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENALL DESIGNER PRO</title>
+    <style>
+        body { background-color: #0b0f19; color: white; font-family: sans-serif; padding: 20px; }
+        .box { border: 1px dashed #3b82f6; padding: 20px; text-align: center; border-radius: 8px; margin-bottom: 15px; }
+        select, input { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border-radius: 6px; background: #1f2937; color: white; border: 1px solid #4b5563; }
+        button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h2 style="color: #ec4899; text-align: center;">Enall DESIGNER PRO</h2>
+
+    <!-- GALERI REFERENSI -->
+    <div class="box">
+        <label>📸 GALERI REFERENSI (MAKS 4 FOTO)</label>
+        <input type="file" id="gambarRef" accept="image/*" multiple style="display:none;">
+        <div id="btnPilihGambar" style="margin-top: 10px; cursor: pointer;">📸 Klik untuk pilih gambar inspirasi</div>
+        <div id="previewGaleri" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; justify-content: center;"></div>
+    </div>
+
+    <label>Deskripsi Visual</label>
+    <input type="text" placeholder="Contoh: di dalam studio foto pencahayaan neon">
+
+    <!-- ⚡ PERBAIKAN 2: Pastikan deretan tag <select> menu drop-down Anda terpasang kembali utuh di sini -->
+    <h3 style="color: #3b82f6;">| DETAIL PAKAIAN & AKSESORIS</h3>
+    
+    <label>Atasan</label>
+    <select name="atasan">
+        <option>-- Pilih Atasan --</option>
+        <option>Kemeja</option>
+        <option>Kaos</option>
+        <option>Jaket</option>
+    </select>
+
+    <label>Warna Atasan</label>
+    <select name="warna_atasan">
+        <option>-- Pilih Warna --</option>
+        <option>Hitam</option>
+        <option>Putih</option>
+        <option>Merah</option>
+    </select>
+
+    <label>Bawahan</label>
+    <select name="bawahan">
+        <option>-- Pilih Bawahan --</option>
+        <option>Celana Panjang</option>
+        <option>Celana Pendek</option>
+        <option>Rok</option>
+    </select>
+
+    <!-- AREA CANVAS UNTUK MENAMPILKAN HASIL GEMINI -->
+    <canvas id="canvasGemini" width="800" height="800" style="max-width: 100%; height: auto; border: 1px solid #333; background: #111; display: none; margin-bottom: 15px; border-radius: 8px;"></canvas>
+
+    <button id="btnGenerate" type="button">GENERATE GAMBAR</button>
+    <button id="btnSimpan" type="button" style="background: #16a34a; margin-top: 10px; display: none;">SIMPAN GAMBAR (DOWNLOAD)</button>
+
+    <!-- Hubungkan dengan Script Pengaktif Fungsi Klik yang sudah kita bahas sebelumnya -->
+    <script>
+      const btnPilihGambar = document.getElementById('btnPilihGambar');
+      const inputGambar = document.getElementById('gambarRef');
+      const previewGaleri = document.getElementById('previewGaleri');
+      const btnGenerate = document.getElementById('btnGenerate');
+      const btnSimpan = document.getElementById('btnSimpan');
+      const canvas = document.getElementById('canvasGemini');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      let listGambarBase64 = [];
+
+      btnPilihGambar.addEventListener('click', () => inputGambar.click());
+      inputGambar.addEventListener('change', function(e) {
+          const files = Array.from(e.target.files).slice(0, 4);
+          previewGaleri.innerHTML = '';
+          listGambarBase64 = [];
+          files.forEach(file => {
+              const reader = new FileReader();
+              reader.onload = function(event) {
+                  listGambarBase64.push(event.target.result);
+                  const img = document.createElement('img');
+                  img.src = event.target.result;
+                  img.style.width = '70px'; img.style.height = '70px'; img.style.objectFit = 'cover'; img.style.borderRadius = '6px';
+                  previewGaleri.appendChild(img);
+              };
+              reader.readAsDataURL(file);
+          });
+      });
+
+      btnGenerate.addEventListener('click', async () => {
+          btnGenerate.disabled = true;
+          btnGenerate.innerText = "SEDANG MENGGENERATE...";
+          // Simulasi Fetch API ke backend
+          setTimeout(() => {
+              const imgHasil = new Image();
+              imgHasil.crossOrigin = "anonymous";
+              imgHasil.onload = function() {
+                  canvas.style.display = "block";
+                  ctx.clearRect(0, 0, canvas.width, canvas.height);
+                  ctx.drawImage(imgHasil, 0, 0, canvas.width, canvas.height);
+                  btnGenerate.innerText = "GENERATE BERHASIL";
+                  btnGenerate.disabled = false;
+                  btnSimpan.style.display = "block";
+              };
+              imgHasil.src = "https://unsplash.com";
+          }, 2000);
+      });
+
+      btnSimpan.addEventListener('click', function() {
+          const dataUrl = canvas.toDataURL("image/png");
+          const downloadAnchor = document.createElement('a');
+          downloadAnchor.href = dataUrl;
+          downloadAnchor.download = "enall-designer-pro-output.png";
+          document.body.appendChild(downloadAnchor);
+          downloadAnchor.click();
+          document.body.removeChild(downloadAnchor);
+      });
+    </script>
+</body>
+</html>
